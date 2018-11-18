@@ -19,7 +19,7 @@ You will implement your web application Google Cloud.  You'll be able to share t
 * **10/11**: Submit Part 2
 * **11/8**: Submit Part 3
 
-Note: you can only use late days for the project description submisson, not for finding a teammate nor for meeting with the staff. Please read the Project Lateness Policy carefully. 
+Note: you can only use late days for the project description submisson, not for finding a teammate nor for meeting with the staff. Please read the Project Lateness Policy carefully.
 
 
 ### Teams of _exactly_ 2
@@ -43,7 +43,7 @@ professional software engineers and data scientists do:
 
 1. Use Google or StackOverflow by searching for the error message
 1. Look for previous answers on Piazza
-1. Ask on Piazza.  Include the following in your question: 
+1. Ask on Piazza.  Include the following in your question:
     * what you're trying to do
     * describe the approach you took
     * the error message
@@ -52,3 +52,4 @@ professional software engineers and data scientists do:
 
 ### Member
 Zihan Bu zb2244
+Chenyu Xi cx2219
