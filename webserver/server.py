@@ -25,7 +25,7 @@ app = Flask(__name__, template_folder=tmpl_dir)
 
 
 
-# XXX: The Database URI should be in the format of: 
+# XXX: The Database URI should be in the format of:
 #
 #     postgresql://USER:PASSWORD@<IP_OF_POSTGRE_SQL_SERVER>/<DB_NAME>
 #
@@ -36,8 +36,8 @@ app = Flask(__name__, template_folder=tmpl_dir)
 # For your convenience, we already set it to the class database
 
 # Use the DB credentials you received by e-mail
-DB_USER = "YOUR_DB_USERNAME_HERE"
-DB_PASSWORD = "YOUR_DB_PASSWORD_HERE"
+DB_USER = "zb2244"
+DB_PASSWORD = "hx2jsr9w"
 
 DB_SERVER = "w4111.cisxo09blonu.us-east-1.rds.amazonaws.com"
 
@@ -63,7 +63,7 @@ engine.execute("""INSERT INTO test(name) VALUES ('grace hopper'), ('alan turing'
 @app.before_request
 def before_request():
   """
-  This function is run at the beginning of every web request 
+  This function is run at the beginning of every web request
   (every time you enter an address in the web browser).
   We use it to setup a database connection that can be used throughout the request
 
@@ -97,7 +97,7 @@ def teardown_request(exception):
 #       @app.route("/foobar/", methods=["POST", "GET"])
 #
 # PROTIP: (the trailing / in the path is important)
-# 
+#
 # see for routing: http://flask.pocoo.org/docs/0.10/quickstart/#routing
 # see for decorators: http://simeonfranklin.com/blog/2012/jul/1/python-decorators-in-12-steps/
 #
@@ -135,14 +135,14 @@ def index():
   # You can see an example template in templates/index.html
   #
   # context are the variables that are passed to the template.
-  # for example, "data" key in the context variable defined below will be 
+  # for example, "data" key in the context variable defined below will be
   # accessible as a variable in index.html:
   #
   #     # will print: [u'grace hopper', u'alan turing', u'ada lovelace']
   #     <div>{{data}}</div>
-  #     
+  #
   #     # creates a <div> tag for each element in data
-  #     # will print: 
+  #     # will print:
   #     #
   #     #   <div>grace hopper</div>
   #     #   <div>alan turing</div>
@@ -163,7 +163,7 @@ def index():
 
 #
 # This is an example of a different path.  You can see it at
-# 
+#
 #     localhost:8111/another
 #
 # notice that the functio name is another() rather than index()
