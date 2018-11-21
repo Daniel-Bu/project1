@@ -85,7 +85,7 @@ def signup():
         newuser = User(email, password, name)
         newuser.insert_new_user()
         if not newuser.valid:
-            error = 'Email already taken, please choose another one'
+            error = 'Invalid user information, please choose another one'
         else:
             session['logged_in'] = True
             login_user(newuser)
