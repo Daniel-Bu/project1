@@ -1,28 +1,17 @@
 from flask_login import UserMixin
 from flask import g
-#
-# DB_USER = "zb2244"
-# DB_PASSWORD = "hx2jsr9w"
-# DB_SERVER = "w4111.cisxo09blonu.us-east-1.rds.amazonaws.com"
-# DATABASEURI = "postgresql://" + DB_USER + ":" + DB_PASSWORD + "@" + DB_SERVER + "/w4111"
-# engine = create_engine(DATABASEURI)
-# conn = engine.connect()
-
-# user implementation:
-# Set secret Key
 
 
 class User(UserMixin):
-
-    # set database
     def __init__(self, email='', password='', name=''):
         UserMixin.__init__(self)
         self.email = email
         self.name = name
         self.password = password
         self.valid = False
-        self.id = ''
+        self.id = ''  # Extra id field for Flask-login requirement
 
+    # @This Function verify whether a user is recorded
     def user_verify(self):
         eid = self.email
         code = self.password
@@ -37,9 +26,10 @@ class User(UserMixin):
                 self.valid = True
             break
 
+    # @This function insert a new user into database
     def insert_new_user(self):
         try:
-            query= '''
+            query = '''
             insert into usr (email,name,password)
             values (%s,%s,%s)'''
             g.conn.execute(query, (self.email, self.name, self.password))
@@ -47,6 +37,9 @@ class User(UserMixin):
         except:
             print 'invalid user'
 
+    '''
+    Rewrite def in order to get things work
+    '''
     def is_authenticated(self):
         if self.valid:
             return True

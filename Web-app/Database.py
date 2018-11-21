@@ -1,6 +1,6 @@
 from sqlalchemy import *
 
-# Set Database
+# Set up Database
 DB_USER = "zb2244"
 DB_PASSWORD = "hx2jsr9w"
 DB_SERVER = "w4111.cisxo09blonu.us-east-1.rds.amazonaws.com"

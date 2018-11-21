@@ -13,9 +13,8 @@ login_manager.init_app(app)
 login_manager.login_view = "login"
 app.secret_key = 'I love database'
 
-# Must
 
-
+# Get current user's information
 @login_manager.user_loader
 def load_user(s_id):
     email = str(s_id)
@@ -44,19 +43,23 @@ def before_request():
 def teardown_request(exception):
   try:
     g.conn.close()
-  except Exception as e:
+  except Exception:
     pass
 
 
+# @The function for user login
 @app.route("/login", methods=["GET", "POST"])
 def login():
     error = None
     page = 'login'
     if request.method == 'POST':
+
+        # Obtain input value and pass to User object
         email = str(request.form['username']).strip()
         password = str(request.form['password']).strip()
         user = User(email, password)
         user.user_verify()
+
         if not user.valid:
             error = 'Invalid login information'
         else:
@@ -65,9 +68,11 @@ def login():
             print current_user.id
             flash('You were logged in')
             return redirect(url_for('user_home_page'))
+
     return render_template('login.html', error=error, page=page)
 
 
+# @This function is for user sign-up
 @app.route("/signup", methods=["GET", "POST"])
 def signup():
     error = None
@@ -89,6 +94,12 @@ def signup():
     return render_template('signup.html', error=error, page=page)
 
 
+'''
+This part is the User Homepage, add app functions here
+Modify user_home_page.html as well
+'''
+
+
 @app.route("/", methods=["GET", "POST"])
 @login_required
 def user_home_page():
@@ -106,6 +117,5 @@ def logout():
     return redirect(url_for('login'))
 
 
-if __name__ =='__main__':
+if __name__ == '__main__':
     app.run()
-
