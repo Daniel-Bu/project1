@@ -15,6 +15,10 @@ class User(UserMixin):
     def user_verify(self):
         eid = self.email
         code = self.password
+        if eid.strip() == '':
+            return
+        if code.strip() == '':
+            return
         query = '''select * from usr where email like\''''+eid+'\''
         cursor = g.conn.execute(query)
         for row in cursor:
@@ -32,6 +36,8 @@ class User(UserMixin):
             query = '''
             insert into usr (email,name,password)
             values (%s,%s,%s)'''
+            if self.email.strip() == '' or self.name.strip() == '' or self.name.strip() =='':
+                return
             g.conn.execute(query, (self.email, self.name, self.password))
             self.valid = True
             if self.valid:
