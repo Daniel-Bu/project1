@@ -135,7 +135,7 @@ def search_vacancy():
         for row in cursor:
             job.append(row)
         data = job
-        return render_template("search.html", data=data)
+        return render_template("search.html", data=data, keyword = key)
     return render_template("search.html")
 
 
