@@ -34,6 +34,8 @@ class User(UserMixin):
             values (%s,%s,%s)'''
             g.conn.execute(query, (self.email, self.name, self.password))
             self.valid = True
+            if self.valid:
+                self.id = self.email
         except:
             print 'invalid user'
 
