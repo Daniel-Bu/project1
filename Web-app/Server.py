@@ -55,7 +55,7 @@ def login():
     if request.method == 'POST':
 
         # Obtain input value and pass to User object
-        email = str(request.form['username']).strip()
+        email = str(request.form['email']).strip()
         password = str(request.form['password']).strip()
         user = User(email, password)
         user.user_verify()
