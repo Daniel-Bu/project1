@@ -139,9 +139,10 @@ if __name__ == '__main__':
         """
         HOST, PORT = host, port
         print "running on %s:%d" % (HOST, PORT)
-        try:
-            app.run(host=HOST, port=PORT, debug=debug, threaded=threaded)  # Prevent Congestion
-        except:
-            pass
+        while True:
+            try:
+                app.run(host=HOST, port=PORT, debug=debug, threaded=threaded)  # Prevent Congestion
+            except:
+                pass
 
     run()
