@@ -1,10 +1,11 @@
 import os
 from sqlalchemy import *
-from sqlalchemy.pool import NullPool
 from flask import Flask, request, render_template, g, redirect, Response, flash, url_for, session
 from flask_login import LoginManager, login_user, login_required, logout_user, current_user
-from User import User, conn
+from Database import engine
+from User import User
 
+# set app and login system
 tmpl_dir = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'templates')
 app = Flask(__name__, template_folder=tmpl_dir)
 login_manager = LoginManager()
@@ -12,21 +13,7 @@ login_manager.init_app(app)
 login_manager.login_view = "login"
 app.secret_key = 'I love database'
 
-# Set Database
-DB_USER = "zb2244"
-DB_PASSWORD = "hx2jsr9w"
-DB_SERVER = "w4111.cisxo09blonu.us-east-1.rds.amazonaws.com"
-DATABASEURI = "postgresql://"+DB_USER+":"+DB_PASSWORD+"@"+DB_SERVER+"/w4111"
-engine = create_engine(DATABASEURI)
-
-# Test Database
-# Here we create a test table and insert some values in it
-engine.execute("""DROP TABLE IF EXISTS test;""")
-engine.execute("""CREATE TABLE IF NOT EXISTS test (
-  id serial,
-  name text
-);""")
-engine.execute("""INSERT INTO test(name) VALUES ('grace hopper'), ('alan turing'), ('ada lovelace');""")
+# Must
 
 
 @login_manager.user_loader
