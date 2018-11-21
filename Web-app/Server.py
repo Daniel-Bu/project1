@@ -94,6 +94,14 @@ def signup():
     return render_template('signup.html', error=error, page=page)
 
 
+@app.route("/logout")
+@login_required
+def logout():
+    session.pop('logged_in', None)
+    logout_user()
+    return redirect(url_for('login'))
+
+
 '''
 This part is the User Homepage, add app functions here
 Modify user_home_page.html as well
@@ -109,12 +117,29 @@ def user_home_page():
     return render_template("user_home_page.html", message1=message1, message2=message2, message3=message3)
 
 
-@app.route("/logout")
+# @Search job with keyword
+@app.route("/search", methods=["GET", "POST"])
 @login_required
-def logout():
-    session.pop('logged_in', None)
-    logout_user()
-    return redirect(url_for('login'))
+def search_vacancy():
+    if request.method == 'POST':
+        key = str(request.form['keyword']).strip()
+        print key
+        query = '''
+        select j.name as name, v.aname as agency,
+                v.uname as unit, v.sal_from as sfrom, 
+                v.sal_to as sto, v.sal_freq as sfreq
+        from vacancy as v inner join job as j on v.jid = j.jid
+        where j.name like \'%''' + key + '%\' or j.pre_skl like \'%''' + key + '%\''
+        cursor = g.conn.execute(text(query))  # !Very important here, must convert type text()
+        job = []
+        for row in cursor:
+            job.append(row)
+        data = job
+        return render_template("search.html", data=data)
+    return render_template("search.html")
+
+
+
 
 
 if __name__ == '__main__':
