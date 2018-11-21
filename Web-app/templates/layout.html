@@ -6,19 +6,19 @@
     <body><font size="3"><center>
     <p>Designed by <b>Chenyu Xi</b> and <b>Zihan Bu</b>: <a href="https://github.com/Daniel-Bu/project1"> GitHub Link </a>
     </center></font></body></p>
-    <div class=metanav>
-    {% if not session.logged_in %}
-        {% if page == 'login' %}
-        <a href="{{ url_for('signup') }}"><center><font size="5">sign up</font></center></a>
-        {% else %}
-        <a href="{{ url_for('login') }}"><center><font size="5">log in</font></center></a>
-        {% endif %}
-    {% else %}
-        <a href="{{ url_for('logout') }}"><center><font size="5"> log out</font></center></a>
-    {% endif %}
-    </div>
     {% for message in get_flashed_messages() %}
         <div class=flash>{{ message }}</div>
     {% endfor %}
     {% block body %}{% endblock %}
+        <div class=metanav>
+    {% if not session.logged_in %}
+        {% if page == 'login' %}
+        <a href="{{ url_for('signup') }}"><center><font size="2">sign up</font></center></a>
+        {% else %}
+        <a href="{{ url_for('login') }}"><center><font size="2">log in</font></center></a>
+        {% endif %}
+    {% else %}
+        <a href="{{ url_for('logout') }}"><center><font size="2">log out</font></center></a>
+    {% endif %}
+    </div>
 </div>

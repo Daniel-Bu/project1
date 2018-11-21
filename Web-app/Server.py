@@ -1,0 +1,124 @@
+import os
+from sqlalchemy import *
+from sqlalchemy.pool import NullPool
+from flask import Flask, request, render_template, g, redirect, Response, flash, url_for, session
+from flask_login import LoginManager, login_user, login_required, logout_user, current_user
+from User import User, conn
+
+tmpl_dir = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'templates')
+app = Flask(__name__, template_folder=tmpl_dir)
+login_manager = LoginManager()
+login_manager.init_app(app)
+login_manager.login_view = "login"
+app.secret_key = 'I love database'
+
+# Set Database
+DB_USER = "zb2244"
+DB_PASSWORD = "hx2jsr9w"
+DB_SERVER = "w4111.cisxo09blonu.us-east-1.rds.amazonaws.com"
+DATABASEURI = "postgresql://"+DB_USER+":"+DB_PASSWORD+"@"+DB_SERVER+"/w4111"
+engine = create_engine(DATABASEURI)
+
+# Test Database
+# Here we create a test table and insert some values in it
+engine.execute("""DROP TABLE IF EXISTS test;""")
+engine.execute("""CREATE TABLE IF NOT EXISTS test (
+  id serial,
+  name text
+);""")
+engine.execute("""INSERT INTO test(name) VALUES ('grace hopper'), ('alan turing'), ('ada lovelace');""")
+
+
+@login_manager.user_loader
+def load_user(s_id):
+    email = str(s_id)
+    query = '''select * from usr where email like\'''' + email + '\''
+    cursor = g.conn.execute(query)
+    user = User()
+    for row in cursor:
+        user.name = str(row.name)
+        user.email = str(row.email)
+        break
+    return user
+
+
+# Prepare the page
+@app.before_request
+def before_request():
+  try:
+    g.conn = engine.connect()
+  except:
+    print "uh oh, problem connecting to database"
+    import traceback; traceback.print_exc()
+    g.conn = None
+
+
+@app.teardown_request
+def teardown_request(exception):
+  try:
+    g.conn.close()
+  except Exception as e:
+    pass
+
+
+@app.route("/login", methods=["GET", "POST"])
+def login():
+    error = None
+    page = 'login'
+    if request.method == 'POST':
+        email = str(request.form['username']).strip()
+        password = str(request.form['password']).strip()
+        user = User(email, password)
+        user.user_verify()
+        if not user.valid:
+            error = 'Invalid login information'
+        else:
+            session['logged_in'] = True
+            login_user(user)
+            print current_user.id
+            flash('You were logged in')
+            return redirect(url_for('user_home_page'))
+    return render_template('login.html', error=error, page=page)
+
+
+@app.route("/signup", methods=["GET", "POST"])
+def signup():
+    error = None
+    page = 'signup'
+    if request.method == 'POST':
+        name = str(request.form['username']).strip()
+        password = str(request.form['password']).strip()
+        email = str(request.form['email']).strip()
+        print name, password, email
+        newuser = User(email, password, name)
+        newuser.insert_new_user()
+        if not newuser.valid:
+            error = 'Email already taken, please choose another one'
+        else:
+            session['logged_in'] = True
+            login_user(newuser)
+            flash('Thanks for signing up, you are now logged in')
+            return redirect(url_for('user_home_page'))
+    return render_template('signup.html', error=error, page=page)
+
+
+@app.route("/", methods=["GET", "POST"])
+@login_required
+def user_home_page():
+    message1 = "Welcome back!"
+    message2 = "Current User: "+ current_user.name
+    message3 = "Here is your home page"
+    return render_template("user_home_page.html", message1=message1, message2=message2, message3=message3)
+
+
+@app.route("/logout")
+@login_required
+def logout():
+    session.pop('logged_in', None)
+    logout_user()
+    return redirect(url_for('login'))
+
+
+if __name__ =='__main__':
+    app.run()
+
