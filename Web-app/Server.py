@@ -67,6 +67,7 @@ def login():
             login_user(user)
             print current_user.id
             flash('You were logged in')
+            g.user = current_user.id
             return redirect(url_for('user_home_page'))
 
     return render_template('login.html', error=error, page=page)
@@ -111,13 +112,21 @@ Modify user_home_page.html as well
 @app.route("/", methods=["GET", "POST"])
 @login_required
 def user_home_page():
-    message1 = "Welcome back!"
-    message2 = "Current User: "+ current_user.name
-    message3 = "Here is your home page"
-    return render_template("user_home_page.html", message1=message1, message2=message2, message3=message3)
+    message = "Welcome back! " + current_user.name
+    if request.method == 'GET':
+        query = '''
+        select tmp.jid as id, tmp.name as name, tmp.type as type,
+               tmp.sal_from as sfrom, tmp.sal_to as sto, 
+               tmp.sal_freq as sfreq, tmp.posting_time as ptime
+        from (vacancy v natural join job j) as tmp, application ap
+        where ap.uemail = \'''' + session["user_id"] + '\' and ap.jid = tmp.jid and ap.vtype = tmp.type'
+        cursor = g.conn.execute(text(query))
+        data = cursor.fetchall()
+        return render_template("user_home_page.html", message = message, data = data)
+    return render_template("user_home_page.html", message = message)
 
 
-# @Search job with keyword
+# @Search vacancy with keyword
 @app.route("/search", methods=["GET", "POST"])
 @login_required
 def search_vacancy():
@@ -125,9 +134,9 @@ def search_vacancy():
         key = str(request.form['keyword']).strip()
         print key
         query = '''
-        select j.name as name, v.aname as agency,
-                v.uname as unit, v.sal_from as sfrom, 
-                v.sal_to as sto, v.sal_freq as sfreq
+        select j.jid as id, j.name as name, v.type as type,
+               v.sal_from as sfrom, v.sal_to as sto, 
+               v.sal_freq as sfreq ,v.posting_time as ptime
         from vacancy as v inner join job as j on v.jid = j.jid
         where j.name like \'%''' + key + '%\' or j.pre_skl like \'%''' + key + '%\''
         cursor = g.conn.execute(text(query))  # !Very important here, must convert type text()
@@ -138,9 +147,57 @@ def search_vacancy():
         return render_template("search.html", data=data, keyword = key)
     return render_template("search.html")
 
+# detailed info of a vacancy
+@app.route("/detailed_info", methods=["GET", "POST"])
+@login_required
+def detailed_info():
+    if request.method == 'POST':
+        jid = request.form.get('jid')
+        vtype = request.form.get('vtype')
+        query = '''
+        select *
+        from vacancy v natural join job j
+        where j.jid=''' + jid + ' and v.type=\'' + vtype +'\''
+        cursor = g.conn.execute(text(query))
+        data = cursor.fetchall()
+        col_names = ['JID', 'Type', '# Positions', 'Salary from', 'Salary to', 'Salary Frequency', 'Post Until', 'Posting Time', 'Updated Time', 'Unit', 'Agency', 'Level', 'Job Name', 'Preferred Skills', 'Job Description', 'Location', 'Hour/Shift', 'Title code', 'Civil Service TiTle']  # column header
+        return render_template("detailed_info.html", zippedlist = zip(col_names, data[0]), jid = jid, vtype = vtype) # zip to help us iterate two lists parallelly
+    return render_template("detailed_info.html")
 
+# apply for the vacancy
+@app.route("/apply", methods=["GET", "POST"])
+@login_required
+def apply():
+    if request.method == 'POST':
+        jid = request.form.get('jid')
+        vtype = request.form.get('vtype')
+        query = '''
+        insert into Application
+        values (\'''' + session["user_id"] + '\', ' + jid + ', \'' + vtype + '\')'  # Zihan: I tried to use current_user.id here and it returned nothing. So I use session["user_id"] instead.
+        g.conn.execute(text(query))
+        return render_template("apply.html", jid = jid, vtype = vtype)
+    return render_template("apply.html")
 
+# cancel application for the vacancy
+@app.route("/canel_apply", methods=["GET", "POST"])
+@login_required
+def cancel_apply():
+    if request.method == 'POST':
+        jid = request.form.get('jid')
+        vtype = request.form.get('vtype')
+        query = '''
+        delete from Application
+        where uemail=\'''' + session["user_id"] + '\' and jid=' + jid + ' and vtype=\'' + vtype + '\'' 
+        g.conn.execute(text(query))
+        return render_template("cancel_apply.html", jid = jid, vtype = vtype)
+    return render_template("cancel_apply.html")
+# Summary info
 
+# insert job (TBD)
+
+# delete job (TBD)
+
+# update job (TBD)
 
 if __name__ == '__main__':
     import click

@@ -10,25 +10,44 @@
   <h5>Results with key word: {{keyword}}</h5>
   <table border="1">
       <tr>
-        <th>Job Name</th>
-         <th>Agency</th>
-         <th>Unit</th>
-         <th>Low_salary</th>
-         <th>High_salary</th>
-         <th>Frequency</th>
-        </tr>
+        <th>ID</th>
+        <th>Name</th>
+        <th>Type</th>
+        <th>Salary from</th>
+        <th>Salary to</th>
+        <th>Frequency</th>
+        <th>Posting time</th>
+        <th>Details</th>
+        <th>Apply</th>
+      </tr>
     {% for n in data %}
     <tr>
     <td>&nbsp{{n[0]}}</td>
     <td>&nbsp{{n[1]}}</td>
-     <td>&nbsp{{n[2]}}</td>
+    <td>&nbsp{{n[2]}}</td>
     <td>&nbsp{{n[3]}}</td>
-     <td>&nbsp{{n[4]}}</td>
-     <td>&nbsp{{n[5]}}</td>
+    <td>&nbsp{{n[4]}}</td>
+    <td>&nbsp{{n[5]}}</td>
+    <td>&nbsp{{n[6]}}</td>
+    <td>
+    <form action="{{ url_for('detailed_info') }}" method=post>
+        <input type=hidden name=jid value={{n[0]}}>
+        <input type=hidden name=vtype value={{n[2]}}>
+        <input type=submit value="Detailed info">
+    </form>
+    </td>
+    <td>
+    <form action="{{ url_for('apply') }}" method=post>
+        <input type=hidden name=jid value={{n[0]}}>
+        <input type=hidden name=vtype value={{n[2]}}>
+        <input type=submit value="Apply now">
+    </form>
+    </td>
     </tr>
     {% endfor %}
     </table>
 
+<button onclick="window.location.href = '/';">Back home</button>
 </body>
 
 {% endblock %}

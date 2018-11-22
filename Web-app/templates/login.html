@@ -1,16 +1,18 @@
 {% extends "layout.html" %}
 {% block body %}
 <br/>
-    <h2><center>login</center></h2>
+    <h2><center>log in</center></h2>
 <br/>
 
     {% if error %}<p class=error><strong>Error:</strong> {{ error }}{% endif %}
     <form action="{{ url_for('login') }}" method=post>
-        <center>&nbsp&nbsp Email &nbsp: <input type=text name=email></center>
-        <br/>
-        <center>Password: <input type=password name=password></center>
-        <br/>
-        <p align="center"><input type=submit value=Login></p>
-
+        <dl>
+            <center><dt>Email:</center>
+            <center><dd><input type=text name=email></center>
+            <br>
+            <center><dt>Password:</center>
+            <center><dd><input type=password name=password></center>
+        </dl>
+    <p align="center"><input type=submit value="log in"></p>
     </form>
 {% endblock %}
