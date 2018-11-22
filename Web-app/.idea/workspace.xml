@@ -41,7 +41,7 @@
           <entry key="css" value="30" />
           <entry key="dummy" value="6" />
           <entry key="html" value="797" />
-          <entry key="py" value="5251" />
+          <entry key="py" value="5265" />
           <entry key="txt" value="78" />
         </counts>
       </usages-collector>
@@ -50,7 +50,7 @@
           <entry key="CSS" value="30" />
           <entry key="HTML" value="797" />
           <entry key="PLAIN_TEXT" value="84" />
-          <entry key="Python" value="5251" />
+          <entry key="Python" value="5265" />
         </counts>
       </usages-collector>
     </session>
@@ -60,12 +60,12 @@
       <file pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/Server.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="-889">
-              <caret line="132" column="32" lean-forward="true" selection-start-line="132" selection-start-column="32" selection-end-line="132" selection-end-column="32" />
+            <state relative-caret-position="412">
+              <caret line="217" column="32" lean-forward="true" selection-start-line="217" selection-start-column="32" selection-end-line="217" selection-end-column="32" />
               <folding>
                 <element signature="e#0#9#0" expanded="true" />
-                <marker date="1542900652992" expanded="true" signature="911:914" ph="..." />
-                <marker date="1542900652992" expanded="true" signature="1278:1279" ph="..." />
+                <marker date="1542900972904" expanded="true" signature="911:914" ph="..." />
+                <marker date="1542900972904" expanded="true" signature="1278:1279" ph="..." />
               </folding>
             </state>
           </provider>
@@ -205,6 +205,7 @@
       <foldersAlwaysOnTop value="true" />
     </navigator>
     <panes>
+      <pane id="Scope" />
       <pane id="ProjectPane">
         <subPane>
           <expand>
@@ -231,7 +232,6 @@
           <select />
         </subPane>
       </pane>
-      <pane id="Scope" />
     </panes>
   </component>
   <component name="PropertiesComponent">
@@ -381,13 +381,13 @@
       <window_info id="Favorites" order="0" side_tool="true" />
       <window_info content_ui="combo" id="Project" order="1" weight="0.19650392" />
       <window_info id="Structure" order="2" side_tool="true" weight="0.25" />
-      <window_info anchor="bottom" id="Terminal" order="0" sideWeight="0.49608198" weight="0.2877551" />
-      <window_info anchor="bottom" id="Event Log" order="1" sideWeight="0.50994575" side_tool="true" visible="true" weight="0.32959184" />
+      <window_info active="true" anchor="bottom" id="Terminal" order="0" sideWeight="0.4954792" visible="true" weight="0.2877551" />
+      <window_info anchor="bottom" id="Event Log" order="1" sideWeight="0.5045208" side_tool="true" visible="true" weight="0.2877551" />
       <window_info anchor="bottom" id="Python Console" order="2" />
       <window_info anchor="bottom" id="Message" order="3" />
       <window_info anchor="bottom" id="Find" order="4" />
       <window_info anchor="bottom" id="Version Control" order="5" />
-      <window_info active="true" anchor="bottom" id="Run" order="6" sideWeight="0.49005425" visible="true" weight="0.32959184" />
+      <window_info anchor="bottom" id="Run" order="6" sideWeight="0.49005425" weight="0.32959184" />
       <window_info anchor="bottom" id="Debug" order="7" sideWeight="0.49849308" weight="0.4" />
       <window_info anchor="bottom" id="Cvs" order="8" weight="0.25" />
       <window_info anchor="bottom" id="Inspection" order="9" weight="0.4" />
@@ -462,12 +462,12 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/Server.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="-889">
-          <caret line="132" column="32" lean-forward="true" selection-start-line="132" selection-start-column="32" selection-end-line="132" selection-end-column="32" />
+        <state relative-caret-position="412">
+          <caret line="217" column="32" lean-forward="true" selection-start-line="217" selection-start-column="32" selection-end-line="217" selection-end-column="32" />
           <folding>
             <element signature="e#0#9#0" expanded="true" />
-            <marker date="1542900652992" expanded="true" signature="911:914" ph="..." />
-            <marker date="1542900652992" expanded="true" signature="1278:1279" ph="..." />
+            <marker date="1542900972904" expanded="true" signature="911:914" ph="..." />
+            <marker date="1542900972904" expanded="true" signature="1278:1279" ph="..." />
           </folding>
         </state>
       </provider>
