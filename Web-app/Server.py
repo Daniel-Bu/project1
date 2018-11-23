@@ -171,7 +171,7 @@ def search_vacancy():
         elif order_attr == 'highs':
             query += 'order by v.sal_to ' + order
         
-        if limit != 'all':
+        if not limit or limit != 'all':
             query += ' limit ' + limit
         cursor = g.conn.execute(text(query))  # !Very important here, must convert type text()
         job = []
