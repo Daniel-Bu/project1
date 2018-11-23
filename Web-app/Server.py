@@ -131,14 +131,48 @@ def user_home_page():
 @login_required
 def search_vacancy():
     if request.method == 'POST':
+        attr = request.form.get('attr')
+        ptf = str(request.form['pt_from']).strip()  # posting time from
+        ptt = str(request.form['pt_to']).strip()  # posting time from
         key = str(request.form['keyword']).strip()
-        print key
+        order = request.form.get('order')
+        order_attr = request.form.get('order_attr')
+        limit = str(request.form['limit']).strip()
         query = '''
         select j.jid as id, j.name as name, v.type as type,
                v.sal_from as sfrom, v.sal_to as sto, 
                v.sal_freq as sfreq ,v.posting_time as ptime
         from vacancy as v inner join job as j on v.jid = j.jid
-        where j.name like \'%''' + key + '%\' or j.pre_skl like \'%''' + key + '%\''
+        '''
+        if ptf and ptt:
+            query += 'where v.posting_time>=\'' + ptf + '\' and v.posting_time<=\'' + ptt + '\' and '
+        elif ptf and not ptt:
+            query += 'where v.posting_time>=\'' + ptf + '\' and '
+        elif not ptf and ptt:
+            query += 'where v.posting_time<=\'' + ptt + '\' and '
+        else:
+            query += 'where '
+
+        if attr == 'name':
+            query += 'lower(j.name) like lower(\'%' + key + '%\') '    # use lower() to ignore case 
+        elif attr == 'salary':
+            query += 'v.sal_from <= ' + key + ' and v.sal_to >=' + key + ' '
+        elif attr == 'skill':
+            query += 'j.pre_skl like \'%' + key + '%\' or j.job_des like \'%''' + key + '%\' '
+        
+        if order_attr == 'pt':
+            query += 'order by v.posting_time ' + order
+        elif order_attr == 'id':
+            query += 'order by j.jid ' + order
+        elif order_attr == 'name':
+            query += 'order by j.name ' + order
+        elif order_attr == 'lows':
+            query += 'order by v.sal_from ' + order
+        elif order_attr == 'highs':
+            query += 'order by v.sal_to ' + order
+        
+        if limit != 'all':
+            query += ' limit ' + limit
         cursor = g.conn.execute(text(query))  # !Very important here, must convert type text()
         job = []
         for row in cursor:
@@ -191,7 +225,8 @@ def cancel_apply():
         g.conn.execute(text(query))
         return render_template("cancel_apply.html", jid = jid, vtype = vtype)
     return render_template("cancel_apply.html")
-# Summary info
+
+# some statistic info
 
 # insert job (TBD)
 
