@@ -131,10 +131,12 @@ def user_home_page():
 @login_required
 def search_vacancy():
     if request.method == 'POST':
+        key = str(request.form['keyword']).strip()
+        if not key:
+            return render_template("search.html")
         attr = request.form.get('attr')
         ptf = str(request.form['pt_from']).strip()  # posting time from
         ptt = str(request.form['pt_to']).strip()  # posting time from
-        key = str(request.form['keyword']).strip()
         order = request.form.get('order')
         order_attr = request.form.get('order_attr')
         limit = str(request.form['limit']).strip()
@@ -152,7 +154,7 @@ def search_vacancy():
             query += 'where v.posting_time<=\'' + ptt + '\' and '
         else:
             query += 'where '
-
+        
         if attr == 'name':
             query += 'lower(j.name) like lower(\'%' + key + '%\') '    # use lower() to ignore case 
         elif attr == 'salary':
@@ -171,7 +173,7 @@ def search_vacancy():
         elif order_attr == 'highs':
             query += 'order by v.sal_to ' + order
         
-        if not limit or limit != 'all':
+        if limit and limit != 'all':
             query += ' limit ' + limit
         cursor = g.conn.execute(text(query))  # !Very important here, must convert type text()
         job = []
