@@ -9,17 +9,23 @@
 <form method="POST">
 <div>Salary Frequency:
     <select name="attr">
-        <option value="annual">Annual</option>
-        <option value="hourly">Hourly</option>
+        <option value="Annual">Annual</option>
+        <option value="Hourly">Hourly</option>
+    </select><br/>
+    Salary type:
+    <select name="attr2">
+        <option value="lower">Lower Bound</option>
+        <option value="upper">Upper Bound</option>
     </select>
-    <p><input type=submit value="Show results"></p>
+    <p><input type=submit value="Show Results"></p>
 </div>
 </form>
     {% if show == 1:%}
 <div class="picture">
-    <h3><center>Salary Distribution (Upper-bound)</center></h3>
+    <h3><center>Salary Distribution</center></h3>
     <center>
     <canvas id="circle" width="600" height="400">Browser not support Canvas!</canvas>
+        <p><b>{{txt}}</b></p>
     </center>
     {%endif%}
 </div>

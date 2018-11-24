@@ -33,3 +33,6 @@ def show_salary_statistics():
 
 data, txt = show_salary_statistics()
 print data, txt
+
+A = 'JHJASJ'
+print A.lower()

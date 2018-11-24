@@ -180,6 +180,7 @@ def search_vacancy():
             query += 'lower(j.pre_skl) like lower(%s) or lower(j.job_des) like lower(%s) '
             key = '%' + key + '%'
             para_list.append(key)
+            para_list.append(key)
             key_field = 'skill'
         # order
         if order_attr == 'pt':
@@ -196,7 +197,6 @@ def search_vacancy():
         if limit and limit != 'all':
             query += ' limit %s'
             para_list.append(limit)
-        print query
         cursor = g.conn.execute(query, tuple(para_list))
         job = []
         for row in cursor:
@@ -229,14 +229,23 @@ def detailed_info():
 @login_required
 def apply():
     if request.method == 'POST':
+        show = 1
         jid = request.form.get('jid')
         vtype = request.form.get('vtype')
+        query = ''' select * from application
+        where uemail like '%s' and jid = %s and vtype like '%s' ''' % (session["user_id"], jid, vtype)
+        cursor = g.conn.execute(text(query))
+        tmp = []
+        for row in cursor:
+            tmp.append(row)
+        if len(tmp) != 0:
+            return render_template("apply.html", error='You have applied this job before!', show=0)
         query = '''
         insert into Application
         values (\'''' + session["user_id"] + '\', ' + jid + ', \'' + vtype + '\')'  # Zihan: I tried to use current_user.id here and it returned nothing. So I use session["user_id"] instead.
         g.conn.execute(text(query))
-        return render_template("apply.html", jid = jid, vtype = vtype)
-    return render_template("apply.html")
+        return render_template("apply.html", jid = jid, vtype = vtype, show=1)
+    return render_template("apply.html", show=0)
 
 # cancel application for the vacancy
 @app.route("/canel_apply", methods=["GET", "POST"])
@@ -254,9 +263,13 @@ def cancel_apply():
 
 
 # some statistic info
-def show_salary_statistics(frequency):
+# @ Function offers data to draw the cake
+def show_salary_statistics(frequency, bound):
     frequency = str(frequency).strip()
-    query = '''select max(sal_to) as max from vacancy where sal_freq like '%s' ''' % frequency
+    tmp = 'sal_to'
+    if bound == 'lower':
+        tmp = 'sal_from'
+    query = '''select max(%s) as max from vacancy where sal_freq like '%s' ''' % (tmp, frequency)
     cursor = g.conn.execute(text(query))
     max_sal = 0
     for row in cursor:
@@ -306,15 +319,13 @@ def statistics():
         app_num = row.num
         break
     if request.method == 'POST':
+        show = 1
         attr = request.form.get('attr')
-        if attr == "annual":
-            show = 1
-            data, low, high = show_salary_statistics("Annual")
-        else:
-            show = 1
-            data, low, high = show_salary_statistics("Hourly")
+        attr2 = request.form.get('attr2')
+        data, low, high = show_salary_statistics(attr, attr2)
         data = [round(i, 2) for i in data]
-        return render_template("statistics.html", jobnum=job_num, usernum=user_num, appnum=app_num, data=data, low=low, high=high, show=show)
+        txt = 'Results with frequency: %s; bound: %s bound' % (attr.lower(), attr2.lower())
+        return render_template("statistics.html", jobnum=job_num, usernum=user_num, appnum=app_num, data=data, low=low, high=high, show=show, txt=txt)
     return render_template("statistics.html", jobnum=job_num, usernum=user_num, appnum=app_num, show=show)
 # insert job (TBD)
 
