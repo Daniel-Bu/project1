@@ -1,9 +1,6 @@
 {% extends "layout.html" %}
 {% block body %}
-<br/>
     <h2><center>log in</center></h2>
-<br/>
-
     {% if error %}<p class=error><strong>Error:</strong> {{ error }}{% endif %}
     <form action="{{ url_for('login') }}" method=post>
         <dl>

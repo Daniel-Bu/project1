@@ -252,11 +252,70 @@ def cancel_apply():
         return render_template("cancel_apply.html", jid = jid, vtype = vtype)
     return render_template("cancel_apply.html")
 
+
 # some statistic info
+def show_salary_statistics(frequency):
+    frequency = str(frequency).strip()
+    query = '''select max(sal_to) as max from vacancy where sal_freq like '%s' ''' % frequency
+    cursor = g.conn.execute(text(query))
+    max_sal = 0
+    for row in cursor:
+        max_sal = row.max
+        break
+    segment = 5
+    frac = max_sal / segment + 1
+    low_sal = 1
+    num = []
+    low_range = []
+    high_range = []
+    for i in range(segment):
+        low_sal = low_sal
+        high_sal = low_sal + frac
+        query = '''select count(*) as num from vacancy 
+        where sal_freq like '%s' and sal_to >''' % frequency + str(low_sal) + ' and ' + 'sal_to < ' + str(high_sal)
+        cursor = g.conn.execute(text(query))
+        for row in cursor:
+            num.append(int(row.num))
+            low_range.append(int(low_sal))
+            high_range.append(int(high_sal))
+            break
+        low_sal = high_sal + 1
+    numsum = float(sum(num))
+    for i in range(len(num)):
+        num[i] = float(num[i]) / float(numsum) * 100
+    return num, low_range, high_range
+
+
 @app.route("/statistics", methods=["GET", "POST"])
 @login_required
 def statistics():
-    return render_template("statistics.html")
+    query = '''select count(*) as num from job'''
+    cursor = g.conn.execute(text(query))
+    show = 0
+    for row in cursor:
+        job_num = row.num
+        break
+    query = '''select count(*) as num from usr'''
+    cursor = g.conn.execute(text(query))
+    for row in cursor:
+        user_num = row.num
+        break
+    query = '''select count(*) as num from application'''
+    cursor = g.conn.execute(text(query))
+    for row in cursor:
+        app_num = row.num
+        break
+    if request.method == 'POST':
+        attr = request.form.get('attr')
+        if attr == "annual":
+            show = 1
+            data, low, high = show_salary_statistics("Annual")
+        else:
+            show = 1
+            data, low, high = show_salary_statistics("Hourly")
+        data = [round(i, 2) for i in data]
+        return render_template("statistics.html", jobnum=job_num, usernum=user_num, appnum=app_num, data=data, low=low, high=high, show=show)
+    return render_template("statistics.html", jobnum=job_num, usernum=user_num, appnum=app_num, show=show)
 # insert job (TBD)
 
 # delete job (TBD)
