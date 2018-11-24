@@ -1,7 +1,10 @@
 {% extends "layout.html" %}
 {% block body%}
     <div>{{ message }}</div>
+    <br/>
+    {%if show==1%}
     <div>Your applications <br>
+        <br/>
         <table border="1">
             <tr>
                 <th>ID</th>
@@ -40,6 +43,9 @@
             {% endfor %}
         </table>
     </div>
+    {%else%}
+        <div>You have no application yet!</div>
+    {%endif%}
     
     <p align="center"><a href="/search">Search the Job!</a></p>
 {% endblock %}

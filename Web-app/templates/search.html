@@ -1,13 +1,44 @@
 {% extends "layout.html" %}
 {% block body%}
 <form method="POST">
-<h3 align="center"> Search with Job Skill</h3>
- <p align="center">Search jobs with the skill keywords</p>
-<h4 align = 'center'> Title: <input type=text name="keyword"> </h4>
- <p align="center"><input type=submit value=Search></p>
+<h3 align="center"> Search jobs!</h3>
+<div>I want to search by
+<select name="attr">
+    <option value="name">name</option>
+    <option value="salary">salary</option>
+    <option value="skill">skill/requirement</option>
+</select>
+    with the keyword:
+<input type=text name="keyword">
+</div>
+     <br/>
+<div>(Optional)Posting time from <input type=text name="pt_from" placeholder="YYYY-MM-DD"> to <input type=text name="pt_to" placeholder="YYYY-MM-DD"> </div>
+    <br/>
+<div>
+In the order of
+ <select name="order">
+    <option value="DESC">descendant</option>
+    <option value="ASC">ascendant</option>
+</select>   
+<select name="order_attr">
+    <option value="pt">posting time</option>
+    <option value="id">ID</option>
+    <option value="name">name</option>
+    <option value="lows">lowest salary</option>
+    <option value="highs">highest salary</option>
+</select>
+</div>
+        <br/>
+<div>
+    Show <input type=text name="limit" placeholder="type 'all' for all"> record(s)
+</div>
+        <br/>
+<p><input type=submit value=Search></p>
 </form>
+{% if show==1 %}
 <body>
-  <h5>Results with key word: {{keyword}}</h5>
+  <h5>Search by: {{keyfield}} with key word: {{keyword}}</h5>
+  <h5>Show {{shownum}} records!</h5>
   <table border="1">
       <tr>
         <th>ID</th>
@@ -46,7 +77,8 @@
     </tr>
     {% endfor %}
     </table>
-
+  {%endif%}
+<br/>
 <button onclick="window.location.href = '/';">Back home</button>
 </body>
 

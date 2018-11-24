@@ -19,8 +19,8 @@ class User(UserMixin):
             return
         if code.strip() == '':
             return
-        query = '''select * from usr where email like\''''+eid+'\''
-        cursor = g.conn.execute(query)
+        query = 'select * from usr where email like %s'
+        cursor = g.conn.execute(query, (eid, ))
         for row in cursor:
             key = str(row.password)
             if key.strip() == code.strip():
