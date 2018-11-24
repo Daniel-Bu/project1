@@ -136,8 +136,6 @@ def search_vacancy():
         key = str(request.form['keyword']).strip()
         if not key:
             return render_template("search.html")
-        else:
-            x=1
         mod_key = key
         key_field = ''
         attr = request.form.get('attr')
