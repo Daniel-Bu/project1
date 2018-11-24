@@ -3,7 +3,7 @@
     <div>{{ message }}</div>
     <br/>
     {%if show==1%}
-    <div>Your applications <br>
+<div><center><b>Your Current Applications:</b> <br>
         <br/>
         <table border="1">
             <tr>
@@ -42,10 +42,12 @@
             </td>
             {% endfor %}
         </table>
+    </center>
     </div>
     {%else%}
         <div>You have no application yet!</div>
     {%endif%}
-    
+    <br/>
     <p align="center"><a href="/search">Search the Job!</a></p>
+    <p align="center"><a href="/statistics">See Statistics!</a></p>
 {% endblock %}

@@ -36,9 +36,8 @@ In the order of
 <p><input type=submit value=Search></p>
 </form>
 {% if show==1 %}
-<body>
-  <h5>Search by: {{keyfield}} with key word: {{keyword}}<br/>
-  Show {{shownum}} records!</h5>
+<body><center>
+  <h3>Search by: {{keyfield}} with key word: {{keyword}}. Show {{shownum}} records!</h3>
   <table border="1">
       <tr>
         <th>ID</th>
@@ -80,6 +79,6 @@ In the order of
   {%endif%}
 <br/>
 <button onclick="window.location.href = '/';">Back home</button>
-</body>
+</center></body>
 
 {% endblock %}

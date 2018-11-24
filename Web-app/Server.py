@@ -112,7 +112,7 @@ Modify user_home_page.html as well
 @login_required
 def user_home_page():
     show = 0
-    message = "Welcome back! " + current_user.name
+    message = "Welcome back! User: " + current_user.name
     if request.method == 'GET':
         query = '''
         select tmp.jid as id, tmp.name as name, tmp.type as type,
@@ -253,7 +253,10 @@ def cancel_apply():
     return render_template("cancel_apply.html")
 
 # some statistic info
-
+@app.route("/statistics", methods=["GET", "POST"])
+@login_required
+def statistics():
+    return render_template("statistics.html")
 # insert job (TBD)
 
 # delete job (TBD)
