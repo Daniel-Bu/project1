@@ -4,7 +4,6 @@ from flask import Flask, request, render_template, g, redirect, Response, flash,
 from flask_login import LoginManager, login_user, login_required, logout_user, current_user
 from Database import engine
 from User import User
-
 # set app and login system
 tmpl_dir = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'templates')
 app = Flask(__name__, template_folder=tmpl_dir)
@@ -18,8 +17,8 @@ app.secret_key = 'I love database'
 @login_manager.user_loader
 def load_user(s_id):
     email = str(s_id)
-    query = '''select * from usr where email like\'''' + email + '\''
-    cursor = g.conn.execute(query)
+    query = 'select * from usr where email like %s'
+    cursor = g.conn.execute(query, (email, ))
     user = User()
     for row in cursor:
         user.name = str(row.name)
@@ -119,8 +118,8 @@ def user_home_page():
                tmp.sal_from as sfrom, tmp.sal_to as sto, 
                tmp.sal_freq as sfreq, tmp.posting_time as ptime
         from (vacancy v natural join job j) as tmp, application ap
-        where ap.uemail = \'''' + session["user_id"] + '\' and ap.jid = tmp.jid and ap.vtype = tmp.type'
-        cursor = g.conn.execute(text(query))
+        where ap.uemail = %s and ap.jid = tmp.jid and ap.vtype = tmp.type'''
+        cursor = g.conn.execute(query, (session["user_id"], ))
         data = cursor.fetchall()
         return render_template("user_home_page.html", message = message, data = data)
     return render_template("user_home_page.html", message = message)
@@ -132,14 +131,63 @@ def user_home_page():
 def search_vacancy():
     if request.method == 'POST':
         key = str(request.form['keyword']).strip()
-        print key
+        if not key:
+            return render_template("search.html")
+        attr = request.form.get('attr')
+        ptf = str(request.form['pt_from']).strip()  # posting time from
+        ptt = str(request.form['pt_to']).strip()  # posting time from
+        order = request.form.get('order')
+        order_attr = request.form.get('order_attr')
+        limit = str(request.form['limit']).strip()
+        para_list = []
         query = '''
         select j.jid as id, j.name as name, v.type as type,
                v.sal_from as sfrom, v.sal_to as sto, 
                v.sal_freq as sfreq ,v.posting_time as ptime
         from vacancy as v inner join job as j on v.jid = j.jid
-        where j.name like \'%''' + key + '%\' or j.pre_skl like \'%''' + key + '%\''
-        cursor = g.conn.execute(text(query))  # !Very important here, must convert type text()
+        '''
+        # where
+        # posting time
+        if ptf and ptt:
+            query += 'where v.posting_time>= %s and v.posting_time<= %s and '
+            para_list.append(ptf)
+            para_list.append(ptt)
+        elif ptf and not ptt:
+            query += 'where v.posting_time>= %s and '
+            para_list.append(ptf)
+        elif not ptf and ptt:
+            query += 'where v.posting_time<= %s and '
+            para_list.append(ptt)
+        else:
+            query += 'where '
+        # attribute
+        if attr == 'name':
+            query += 'lower(j.name) like lower(\'%%%s%%\') '    # use lower() to ignore case 
+            para_list.append(key)
+        elif attr == 'salary':
+            query += 'v.sal_from <= %s and v.sal_to >= %s '
+            para_list.append(key)
+            para_list.append(key)
+        elif attr == 'skill':
+            query += 'lower(j.pre_skl) like lower(\'%%%s%%\') or lower(j.job_des) like lower(\'%%%s%%\') '
+            para_list.append(key)
+        # order
+        if order_attr == 'pt':
+            query += 'order by v.posting_time ' + order
+        elif order_attr == 'id':
+            query += 'order by j.jid ' + order
+        elif order_attr == 'name':
+            query += 'order by j.name ' + order
+        elif order_attr == 'lows':
+            query += 'order by v.sal_from ' + order
+        elif order_attr == 'highs':
+            query += 'order by v.sal_to ' + order
+        # limit
+        if limit and limit != 'all':
+            query += ' limit %s'
+            para_list.append(limit)
+        print query
+        cursor = g.conn.execute(query, tuple(para_list))
         job = []
         for row in cursor:
             job.append(row)
@@ -191,7 +239,8 @@ def cancel_apply():
         g.conn.execute(text(query))
         return render_template("cancel_apply.html", jid = jid, vtype = vtype)
     return render_template("cancel_apply.html")
-# Summary info
+
+# some statistic info
 
 # insert job (TBD)
 
