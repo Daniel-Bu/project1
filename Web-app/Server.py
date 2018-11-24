@@ -203,7 +203,7 @@ def search_vacancy():
             job.append(row)
         data = job
         sizeofdata = len(job)
-        return render_template("search.html", data=data, keyword=mod_key, key_field=key_field, shownum=sizeofdata, show=1)
+        return render_template("search.html", data=data, keyword=mod_key, keyfield=key_field+', ', shownum=sizeofdata, show=1)
     return render_template("search.html")
 
 

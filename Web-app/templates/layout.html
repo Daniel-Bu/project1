@@ -8,8 +8,9 @@
     </center></font></body></p>
     {% for message in get_flashed_messages() %}
         <div class=flash>{{ message }}</div>
+        <br/>
     {% endfor %}
-        <div class=metanav>
+        <div>
     {% if not session.logged_in %}
         {% if page == 'login' %}
         <a href="{{ url_for('signup') }}"><center><font size="2">sign up</font></center></a>
@@ -19,6 +20,12 @@
     {% else %}
         <a href="{{ url_for('logout') }}"><center><font size="2">log out</font></center></a>
     {% endif %}
-    </div>
+            </div>
+    <br/>
+    <div class=metanav
+        ><font size="3">
     {% block body %}{% endblock %}
+        </font>
+    </div>
+
 </div>
