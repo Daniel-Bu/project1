@@ -8,10 +8,13 @@
     <option value="salary">salary</option>
     <option value="skill">skill/requirement</option>
 </select>
+    with the keyword:
 <input type=text name="keyword">
-</div> 
-<div>Posting time from <input type=text name="pt_from" placeholder="YYYY-MM-DD"> to <input type=text name="pt_to" placeholder="YYYY-MM-DD"> </div>
-<div> 
+</div>
+     <br/>
+<div>(Optional)Posting time from <input type=text name="pt_from" placeholder="YYYY-MM-DD"> to <input type=text name="pt_to" placeholder="YYYY-MM-DD"> </div>
+    <br/>
+<div>
 In the order of
  <select name="order">
     <option value="DESC">descendant</option>
@@ -25,13 +28,17 @@ In the order of
     <option value="highs">highest salary</option>
 </select>
 </div>
+        <br/>
 <div>
     Show <input type=text name="limit" placeholder="type 'all' for all"> record(s)
 </div>
+        <br/>
 <p><input type=submit value=Search></p>
 </form>
+{% if show==1 %}
 <body>
-  <h5>Results with key word: {{keyword}}</h5>
+  <h5>Search by: {{keyfield}} with key word: {{keyword}}</h5>
+  <h5>Show {{shownum}} records!</h5>
   <table border="1">
       <tr>
         <th>ID</th>
@@ -70,7 +77,8 @@ In the order of
     </tr>
     {% endfor %}
     </table>
-
+  {%endif%}
+<br/>
 <button onclick="window.location.href = '/';">Back home</button>
 </body>
 

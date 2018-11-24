@@ -111,6 +111,7 @@ Modify user_home_page.html as well
 @app.route("/", methods=["GET", "POST"])
 @login_required
 def user_home_page():
+    show = 0
     message = "Welcome back! " + current_user.name
     if request.method == 'GET':
         query = '''
@@ -121,7 +122,9 @@ def user_home_page():
         where ap.uemail = %s and ap.jid = tmp.jid and ap.vtype = tmp.type'''
         cursor = g.conn.execute(query, (session["user_id"], ))
         data = cursor.fetchall()
-        return render_template("user_home_page.html", message = message, data = data)
+        if len(data):
+            show = 1
+        return render_template("user_home_page.html", message = message, data = data, show=show)
     return render_template("user_home_page.html", message = message)
 
 
@@ -133,6 +136,10 @@ def search_vacancy():
         key = str(request.form['keyword']).strip()
         if not key:
             return render_template("search.html")
+        else:
+            x=1
+        mod_key = key
+        key_field = ''
         attr = request.form.get('attr')
         ptf = str(request.form['pt_from']).strip()  # posting time from
         ptt = str(request.form['pt_to']).strip()  # posting time from
@@ -162,15 +169,20 @@ def search_vacancy():
             query += 'where '
         # attribute
         if attr == 'name':
-            query += 'lower(j.name) like lower(\'%%%s%%\') '    # use lower() to ignore case 
+            query += 'lower(j.name) like lower(%s) '    # use lower() to ignore case
+            key = '%'+key+'%'
             para_list.append(key)
+            key_field = 'name'
         elif attr == 'salary':
             query += 'v.sal_from <= %s and v.sal_to >= %s '
             para_list.append(key)
             para_list.append(key)
+            key_field = 'salary'
         elif attr == 'skill':
-            query += 'lower(j.pre_skl) like lower(\'%%%s%%\') or lower(j.job_des) like lower(\'%%%s%%\') '
+            query += 'lower(j.pre_skl) like lower(%s) or lower(j.job_des) like lower(%s) '
+            key = '%' + key + '%'
             para_list.append(key)
+            key_field = 'skill'
         # order
         if order_attr == 'pt':
             query += 'order by v.posting_time ' + order
@@ -192,8 +204,10 @@ def search_vacancy():
         for row in cursor:
             job.append(row)
         data = job
-        return render_template("search.html", data=data, keyword = key)
+        sizeofdata = len(job)
+        return render_template("search.html", data=data, keyword=mod_key, key_field=key_field, shownum=sizeofdata, show=1)
     return render_template("search.html")
+
 
 # detailed info of a vacancy
 @app.route("/detailed_info", methods=["GET", "POST"])
