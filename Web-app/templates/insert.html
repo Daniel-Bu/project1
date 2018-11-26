@@ -26,9 +26,9 @@
 
         Number of Positions:&nbsp <input type=text name="num" onkeyup="this.value=this.value.replace(/\D/g,'')" onafterpaste="this.value=this.value.replace(/\D/g,'')" placeholder="only support integers"><br>
             <p></p>
-        Salary from:&nbsp <input type=text name="sal_from" onkeyup="if(isNaN(value))execCommand('undo')" onafterpaste="if(isNaN(value))execCommand('undo')" placeholder="only support float"><br>
+        Salary from:&nbsp <input type=text name="sal_from" onkeyup="this.value=this.value.replace(/\D/g,'')" onafterpaste="this.value=this.value.replace(/\D/g,'')" placeholder="only support integers"><br>
             <p></p>
-        Salary to:&nbsp <input type=text name="sal_to" onkeyup="if(isNaN(value))execCommand('undo')" onafterpaste="if(isNaN(value))execCommand('undo')" placeholder="only support float"><br>
+        Salary to:&nbsp <input type=text name="sal_to" onkeyup="this.value=this.value.replace(/\D/g,'')" onafterpaste="this.value=this.value.replace(/\D/g,'')" placeholder="only support integers"><br>
             <p></p>
         Salary Frequency:&nbsp <select name="sal_freq">
                <option value="Annual">Annual</option>
