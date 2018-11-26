@@ -4,9 +4,9 @@
 <div class="picture"> <center>
     <h3>Insert Vacancies</h3>
     <div align="left">Please enter the following information to post a new vacancy.<br/> <b>Notice:</b> It's a naive function :)
-        and we only allow you add vacancies for existing agencies as well as civil service titles, currently you cannot add detail information for the new vacancy. :(
-              <p></p>
-
+        and we only let you add vacancies for existing agencies as well as civil service titles, currently you cannot add detail information for new vacancy. :(
+              <p>If the job is already in our database, we will only create a vacancy for you (input job information discarded). One job is allowed to have two vacancies, with different type.</p>
+<p></p>
         <form action="{{ url_for('admin_insert') }}" method=post>
         Job Name:&nbsp <input type=text name="jname">
         <p></p>
