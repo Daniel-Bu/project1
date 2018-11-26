@@ -157,8 +157,8 @@ def user_home_page():
 @app.route("/admin", methods=["GET", "POST"])
 @login_required
 def admin_home_page():
-    message = "Welcome back! Admin " + current_user.name
-    return render_template("admin.html", message = message)
+    message = "Welcome back! Admin"
+    return render_template("admin.html", message=message)
 
 
 # @Search vacancy with keyword
@@ -362,47 +362,107 @@ def statistics():
     return render_template("statistics.html", jobnum=job_num, usernum=user_num, appnum=app_num, show=show)
 
 # functions below are for admin
+# Obtain all level
+def all_level():
+    query = '''select distinct level as l from job order by l'''
+    cursor = g.conn.execute(text(query))
+    level = []
+    for row in cursor:
+        level.append(row.l)
+    return level
+
+def all_title():
+    query = '''select distinct code, title from CIVIL_SERVICE_TITLE'''
+    cursor = g.conn.execute(text(query))
+    info = []
+    code = []
+    title = []
+    for row in cursor:
+        code.append(row.code)
+        title.append(row.title)
+        info.append(row.code+ ' , ' + row.title)
+    return code, title, info
+
+def all_unit():
+    query = '''select distinct name as u, aname as a from unit'''
+    cursor = g.conn.execute(text(query))
+    info = []
+    aname = []
+    uname = []
+    for row in cursor:
+        aname.append(row.a)
+        uname.append(row.u)
+        info.append("Unit: " + row.u + '; Agency: ' + row.a)
+    return aname, uname, info
+
 # insert job
 @app.route("/insert", methods=["GET", "POST"])
 @login_required
 def admin_insert():
+
+    level = all_level()
+    tcode, ttitle, tinfo = all_title()
+    anamelist, unamelist, offer = all_unit()
+
     if request.method == 'POST':
         vtype = request.form.get('type')
+
+        jname = str(request.form['jname']).strip()
+        jlevel_index = int(request.form.get('level'))
+        jtitle_index = int(request.form.get('title'))
+        joffer_index = int(request.form.get('offer'))
+        jlevel = level[jlevel_index]
+        jcode = tcode[jtitle_index]
+        jtitle=ttitle[jtitle_index]
+        unit = unamelist[joffer_index].strip()
+        agency = anamelist[joffer_index].strip()
         jid = str(request.form['jid']).strip()
         num = str(request.form['num']).strip()
         sal_from = str(request.form['sal_from']).strip()
         sal_to = str(request.form['sal_to']).strip()
         sal_freq = request.form.get('sal_freq')
         post_until = str(request.form['post_until']).strip()
-        unit = str(request.form['unit']).strip()
-        agency = str(request.form['agency']).strip()
-        query = 'select jid from job where jid=' + jid
+
+        # unit = str(request.form['unit']).strip()
+        # agency = str(request.form['agency']).strip()
         try:
+            query = 'select jid from job where jid=' + jid
             cursor = g.conn.execute(text(query))
             data = cursor.fetchall()
+            show=2
             if not data:
-                return render_template("insert.html", jid=jid, show=2)
-            query = 'select name, aname from unit where name=\'' + unit +'\' and aname=\'' + agency +'\''
-            cursor = g.conn.execute(text(query))
-            data = cursor.fetchall()
-            if not data:
-                return render_template("insert.html", unit=unit, agency=agency, show=3)
-            if not post_until:
                 query = '''
-                insert into vacancy
-                values (%s, %s, %s, %s, %s, %s, null, now()::date, now()::date, %s, %s)
-                '''
-                g.conn.execute(query, (vtype, jid, num, sal_from, sal_to, sal_freq, unit, agency, ))
-            else:
-                query = '''
-                insert into vacancy
-                values (%s, %s, %s, %s, %s, %s, %s, now()::date, now()::date, %s, %s)
-                '''
-                g.conn.execute(query, (vtype, jid, num, sal_from, sal_to, sal_freq, post_until, unit, agency, ))
-            return render_template("insert.html", jid=jid, vtype=vtype, show=1)
+                            insert into job (jid, name, level, tcode, t_title)
+                            values (%s, %s, %s, %s, %s)'''
+                show=1
+                g.conn.execute(query, (jid, jname, jlevel, jcode, jtitle,))
+
+            # query = 'select name, aname from unit where name=\'' + unit +'\' and aname=\'' + agency +'\''
+            # cursor = g.conn.execute(text(query))
+            # data = cursor.fetchall()
+            # if not data:
+            #     return render_template("insert.html", unit=unit, agency=agency, show=3)
+
+            try:
+                if not post_until:
+                    query = '''
+                    insert into vacancy
+                    values (%s, %s, %s, %s, %s, %s, null, now()::date, now()::date, %s, %s)
+                    '''
+                    g.conn.execute(query, (vtype, jid, num, sal_from, sal_to, sal_freq, unit, agency,))
+                else:
+                    query = '''
+                    insert into vacancy
+                    values (%s, %s, %s, %s, %s, %s, %s, now()::date, now()::date, %s, %s)
+                    '''
+                    g.conn.execute(query, (vtype, jid, num, sal_from, sal_to, sal_freq, post_until, unit, agency, ))
+            except:
+                show=3
+                pass
+            return render_template("insert.html", level=level, tinfo=tinfo, offer=offer, jid=jid, jname=jname, vtype=vtype, show=show, offername=offer[joffer_index])
         except:
-            return render_template("insert.html", jid=jid, show=4)
-    return render_template("insert.html")
+            return render_template("insert.html", level=level, tinfo=tinfo, offer=offer, jid=jid, show=4)
+    return render_template("insert.html", level=level, tinfo=tinfo, offer=offer)
 
 
 # delete/update job
