@@ -230,13 +230,16 @@ def search_vacancy():
         if limit and limit != 'all':
             query += ' limit %s'
             para_list.append(limit)
-        cursor = g.conn.execute(query, tuple(para_list))
-        job = []
-        for row in cursor:
-            job.append(row)
-        data = job
-        sizeofdata = len(job)
-        return render_template("search.html", data=data, keyword=mod_key, keyfield=key_field+', ', shownum=sizeofdata, show=1)
+        try:
+            cursor = g.conn.execute(query, tuple(para_list))
+            job = []
+            for row in cursor:
+                job.append(row)
+            data = job
+            sizeofdata = len(job)
+            return render_template("search.html", data=data, keyword=mod_key, keyfield=key_field+', ', shownum=sizeofdata, show=1)
+        except:
+            return render_template("search.html", error='invalid input value')
     return render_template("search.html")
 
 
@@ -470,6 +473,7 @@ def admin_insert():
 @login_required
 def admin_search():
     if request.method == 'POST':
+        keep = request.form.get('keep')
         key = str(request.form['keyword']).strip()
         if not key:
             return render_template("admin_search.html")
@@ -519,6 +523,10 @@ def admin_search():
             para_list.append(key)
             para_list.append(key)
             key_field = 'skill'
+        elif attr == 'jobid':
+            query += 'v.jid = %s '
+            para_list.append(key)
+            key_field = 'job id'
         # order
         if order_attr == 'pt':
             query += 'order by v.posting_time ' + order
@@ -534,13 +542,16 @@ def admin_search():
         if limit and limit != 'all':
             query += ' limit %s'
             para_list.append(limit)
-        cursor = g.conn.execute(query, tuple(para_list))
-        job = []
-        for row in cursor:
-            job.append(row)
-        data = job
-        sizeofdata = len(job)
-        return render_template("admin_search.html", data=data, keyword=mod_key, keyfield=key_field+', ', shownum=sizeofdata, show=1)
+        try:
+            cursor = g.conn.execute(query, tuple(para_list))
+            job = []
+            for row in cursor:
+                job.append(row)
+            data = job
+            sizeofdata = len(job)
+        except:
+            return render_template("admin_search.html", error = 'invalid input value')
+        return render_template("admin_search.html", data=data, keyword=mod_key, keyfield=key_field+', ', shownum=sizeofdata, show=1, keep=keep)
     return render_template("admin_search.html")
 
 
@@ -550,11 +561,25 @@ def admin_delete():
     if request.method == 'POST':
         jid = request.form.get('jid')
         vtype = request.form.get('vtype')
+        keep = request.form.get('keep')
+        message = ''
         query = '''
         delete from vacancy
         where jid=''' + jid + ' and type=\'' + vtype +'\''
         g.conn.execute(text(query))
-        return render_template("delete.html", jid = jid, vtype = vtype)
+        if keep == 'No':
+            query2 = '''
+            select * from vacancy where jid=''' + jid
+            cursor = g.conn.execute(text(query2))
+            data = cursor.fetchall()
+            if not data:
+                query3 = '''
+                            delete from job
+                            where jid=''' + jid
+                g.conn.execute(text(query3))
+                message = 'Job with ID: '+jid+" has been deleted, because there is no relevant vacancy " \
+                                              "and you choose to delete a job entry in this case ."
+        return render_template("delete.html", jid = jid, vtype = vtype, message=message)
     return render_template("delete.html")
 
 

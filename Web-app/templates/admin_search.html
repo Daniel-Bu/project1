@@ -1,5 +1,6 @@
 {% extends "layout.html" %}
 {% block body%}
+{% if error %}<p class=error><strong>Error:</strong> {{ error }}{% endif %}</p>
 <div class="picture"> <center>
 <form method="POST">
 <h3 align="center"> Search Jobs to Delete / Update (for Admin)</h3>
@@ -7,6 +8,7 @@
 <div>Search by
 <select name="attr">
     <option value="name">name</option>
+    <option value="jobid">job ID</option>
     <option value="salary">salary</option>
     <option value="skill">skill/requirement</option>
 </select>
@@ -31,8 +33,15 @@ In the order of
 </select>
 </div>
         <br/>
+        <b>Do you want to keep a job after delete all its vacancies?</b>
+ <select name="keep">
+     <option value="No">No</option>
+    <option value="Yes">Yes</option>
+
+</select>
+        <br/>
         </div>
-<div>
+<div><p></p>
     Show <input type=text name="limit" placeholder="type 'all' for all (Optional)"> record(s)
 </div>
 
@@ -42,7 +51,7 @@ In the order of
 </center></div>
 {% if show==1 %}
 <body><center>
-  <h3>Search by: {{keyfield}} with key word: {{keyword}}. Show {{shownum}} records!</h3>
+  <h3>Search by: {{keyfield}} with key word: {{keyword}}. Show {{shownum}} records! And Your "keep Job with no vacancy" choice is: {{keep}}</h3>
   <table border="1">
       <tr>
         <th>ID</th>
@@ -75,6 +84,7 @@ In the order of
     <form action="{{ url_for('admin_delete') }}" method=post>
         <input type=hidden name=jid value={{n[0]}}>
         <input type=hidden name=vtype value={{n[2]}}>
+        <input type=hidden name=keep value={{keep}}>
         <input type=submit value="Delete">
     </form>
     </td>
