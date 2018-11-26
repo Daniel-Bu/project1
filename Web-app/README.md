@@ -14,6 +14,15 @@ pip install flask psycopg2 sqlalchemy click flask-login
 - templates: html files
 - static: css theme
 
+## Functions:
+- User / Admin login system
+- User:
+  - Search Jobs
+  - Apply Jobs
+  - See website statistics
+- Admin:
+  - Insert a job or vacancy
+  - Delete a job or vacancy
 ## Reference:
 - css file based on https://github.com/payoung/flask-sqlalchemy-login-manager-template/tree/master/static
 - We rewrite login function
