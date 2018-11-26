@@ -12,14 +12,19 @@ class User(UserMixin):
         self.id = ''  # Extra id field for Flask-login requirement
 
     # @This Function verify whether a user is recorded
-    def user_verify(self):
+    def user_verify(self, user_type):
         eid = self.email
         code = self.password
         if eid.strip() == '':
             return
         if code.strip() == '':
             return
-        query = 'select * from usr where email like %s'
+        if user_type == 'user':
+            query = 'select * from usr where email like %s'
+        elif user_type == 'admin':
+            query = 'select * from admin where account like %s'
+        else:
+            raise ValueError('Invalid user type!')
         cursor = g.conn.execute(query, (eid, ))
         for row in cursor:
             key = str(row.password)

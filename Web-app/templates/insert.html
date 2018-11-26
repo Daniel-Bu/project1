@@ -1,0 +1,50 @@
+{% extends "layout.html" %}
+{% block body%}
+{% if error %}<p class=error><strong>Error:</strong> {{ error }}{% endif %}</p>
+<div>Please enter the following information to post a new vacancy. No information should be left blank except 'Post Until'.
+    <form action="{{ url_for('admin_insert') }}" method=post>
+        Type:&nbsp <select name="type">
+            <option value="External">External</option>
+            <option value="Internal">Internal</option>
+        </select><br>
+        ID:&nbsp <input type=text name="jid"><br>
+        # Positions:&nbsp <input type=text name="num"><br>
+        Salary from:&nbsp <input type=text name="sal_from"><br>
+        Salary to:&nbsp <input type=text name="sal_to"><br>
+        Salary Frequency:&nbsp <select name="sal_freq">
+            <option value="Annual">Annual</option>
+            <option value="Annual">Monthly</option>
+            <option value="Annual">Weekly</option>
+            <option value="Annual">Hourly</option>
+        </select><br>
+        Post Until:&nbsp <input type=text name="post_until" placeholder="YYYY-MM-DD"><br>
+        Unit:&nbsp <input type=text name="unit"><br>
+        Agency:&nbsp <input type=text name="agency"><br>
+        <p><input type=submit value=Post></p>
+    </form>
+</div>
+
+{% if show == 1 %}
+<div class="flash">
+    <p>You have inserted vacancy {{jid}}, {{vtype}}.</p>
+</div>
+{% endif %}
+{% if show == 2 %}
+<div class="flash">
+    <p>This job {{jid}} was not found in our database.</p>
+</div>
+{% endif %}
+{% if show == 3 %}
+<div class="flash">
+    <p>This unit {{unit}} or agency {{agency}}  was not found in our database.</p>
+</div>
+{% endif %}
+
+<button onclick="goBack()">Back</button>
+<button onclick="window.location.href = '/admin';">Back home</button>
+<script>
+function goBack() {
+    window.history.back();
+}
+</script>
+{% endblock %}

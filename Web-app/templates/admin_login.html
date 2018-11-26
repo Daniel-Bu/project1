@@ -1,16 +1,16 @@
 {% extends "layout.html" %}
 {% block body %}
-    <h2><center>log in</center></h2>
+    <h2><center>admin log in</center></h2>
     {% if error %}<p class=error><strong>Error:</strong> {{ error }}{% endif %}
-    <form action="{{ url_for('login') }}" method=post>
+    <form action="{{ url_for('admin_login') }}" method=post>
         <dl>
-            <center><dt>Email:</center>
-            <center><dd><input type=text name=email></center>
+            <center><dt>Admin account:</center>
+            <center><dd><input type=text name=account></center>
             <br>
             <center><dt>Password:</center>
             <center><dd><input type=password name=password></center>
         </dl>
     <p align="center"><input type=submit value="log in"></p>
     </form>
-    <p align="center"><a href="./admin_login">admin entry</a></p>
+    <p align="center"><a href="./login">back to user entry</a></p>
 {% endblock %}

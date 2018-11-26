@@ -57,7 +57,7 @@ def login():
         email = str(request.form['email']).strip()
         password = str(request.form['password']).strip()
         user = User(email, password)
-        user.user_verify()
+        user.user_verify('user')
 
         if not user.valid:
             error = 'Invalid login information'
@@ -70,6 +70,32 @@ def login():
             return redirect(url_for('user_home_page'))
 
     return render_template('login.html', error=error, page=page)
+
+
+# @The function for admin login
+@app.route("/admin_login", methods=["GET", "POST"])
+def admin_login():
+    error = None
+    page = 'admin_login'
+    if request.method == 'POST':
+
+        # Obtain input value and pass to User object
+        account = str(request.form['account']).strip()
+        password = str(request.form['password']).strip()
+        user = User(account, password)
+        user.user_verify('admin')
+
+        if not user.valid:
+            error = 'Invalid login information'
+        else:
+            session['logged_in'] = True
+            login_user(user)
+            print current_user.id
+            flash('You were logged in')
+            g.user = current_user.id
+            return redirect(url_for('admin_home_page'))
+
+    return render_template('admin_login.html', error=error, page=page)
 
 
 # @This function is for user sign-up
@@ -126,6 +152,13 @@ def user_home_page():
             show = 1
         return render_template("user_home_page.html", message = message, data = data, show=show)
     return render_template("user_home_page.html", message = message)
+
+
+@app.route("/admin", methods=["GET", "POST"])
+@login_required
+def admin_home_page():
+    message = "Welcome back! Admin " + current_user.name
+    return render_template("admin.html", message = message)
 
 
 # @Search vacancy with keyword
@@ -327,11 +360,139 @@ def statistics():
         txt = 'Results with frequency: %s; bound: %s bound' % (attr.lower(), attr2.lower())
         return render_template("statistics.html", jobnum=job_num, usernum=user_num, appnum=app_num, data=data, low=low, high=high, show=show, txt=txt)
     return render_template("statistics.html", jobnum=job_num, usernum=user_num, appnum=app_num, show=show)
-# insert job (TBD)
 
-# delete job (TBD)
+# functions below are for admin
+# insert job
+@app.route("/insert", methods=["GET", "POST"])
+@login_required
+def admin_insert():
+    if request.method == 'POST':
+        vtype = request.form.get('type')
+        jid = str(request.form['jid']).strip()
+        num = str(request.form['num']).strip()
+        sal_from = str(request.form['sal_from']).strip()
+        sal_to = str(request.form['sal_to']).strip()
+        sal_freq = request.form.get('sal_freq')
+        post_until = str(request.form['post_until']).strip()
+        unit = str(request.form['unit']).strip()
+        agency = str(request.form['agency']).strip()
+        query = 'select jid from job where jid=' + jid
+        cursor = g.conn.execute(text(query))
+        data = cursor.fetchall()
+        if not data:
+            return render_template("insert.html", jid=jid, show=2)
+        query = 'select name, aname from unit where name=\'' + unit +'\' and aname=\'' + agency +'\''
+        cursor = g.conn.execute(text(query))
+        data = cursor.fetchall()
+        if not data:
+            return render_template("insert.html", unit=unit, agency=agency, show=3)
+        if not post_until:
+            query = '''
+            insert into vacancy
+            values (%s, %s, %s, %s, %s, %s, null, now()::date, now()::date, %s, %s)
+            '''
+            g.conn.execute(query, (vtype, jid, num, sal_from, sal_to, sal_freq, unit, agency, ))
+        else:
+            query = '''
+            insert into vacancy
+            values (%s, %s, %s, %s, %s, %s, %s, now()::date, now()::date, %s, %s)
+            '''
+            g.conn.execute(query, (vtype, jid, num, sal_from, sal_to, sal_freq, post_until, unit, agency, ))
+        return render_template("insert.html", jid=jid, vtype=vtype, show=1)
+    return render_template("insert.html")
 
-# update job (TBD)
+
+# delete/update job
+@app.route("/admin_search", methods=["GET", "POST"])
+@login_required
+def admin_search():
+    if request.method == 'POST':
+        key = str(request.form['keyword']).strip()
+        if not key:
+            return render_template("admin_search.html")
+        mod_key = key
+        key_field = ''
+        attr = request.form.get('attr')
+        ptf = str(request.form['pt_from']).strip()  # posting time from
+        ptt = str(request.form['pt_to']).strip()  # posting time from
+        order = request.form.get('order')
+        order_attr = request.form.get('order_attr')
+        limit = str(request.form['limit']).strip()
+        para_list = []
+        query = '''
+        select j.jid as id, j.name as name, v.type as type,
+               v.sal_from as sfrom, v.sal_to as sto, 
+               v.sal_freq as sfreq ,v.posting_time as ptime
+        from vacancy as v inner join job as j on v.jid = j.jid
+        '''
+        # where
+        # posting time
+        if ptf and ptt:
+            query += 'where v.posting_time>= %s and v.posting_time<= %s and '
+            para_list.append(ptf)
+            para_list.append(ptt)
+        elif ptf and not ptt:
+            query += 'where v.posting_time>= %s and '
+            para_list.append(ptf)
+        elif not ptf and ptt:
+            query += 'where v.posting_time<= %s and '
+            para_list.append(ptt)
+        else:
+            query += 'where '
+        # attribute
+        if attr == 'name':
+            query += 'lower(j.name) like lower(%s) '    # use lower() to ignore case
+            key = '%'+key+'%'
+            para_list.append(key)
+            key_field = 'name'
+        elif attr == 'salary':
+            query += 'v.sal_from <= %s and v.sal_to >= %s '
+            para_list.append(key)
+            para_list.append(key)
+            key_field = 'salary'
+        elif attr == 'skill':
+            query += 'lower(j.pre_skl) like lower(%s) or lower(j.job_des) like lower(%s) '
+            key = '%' + key + '%'
+            para_list.append(key)
+            para_list.append(key)
+            key_field = 'skill'
+        # order
+        if order_attr == 'pt':
+            query += 'order by v.posting_time ' + order
+        elif order_attr == 'id':
+            query += 'order by j.jid ' + order
+        elif order_attr == 'name':
+            query += 'order by j.name ' + order
+        elif order_attr == 'lows':
+            query += 'order by v.sal_from ' + order
+        elif order_attr == 'highs':
+            query += 'order by v.sal_to ' + order
+        # limit
+        if limit and limit != 'all':
+            query += ' limit %s'
+            para_list.append(limit)
+        cursor = g.conn.execute(query, tuple(para_list))
+        job = []
+        for row in cursor:
+            job.append(row)
+        data = job
+        sizeofdata = len(job)
+        return render_template("admin_search.html", data=data, keyword=mod_key, keyfield=key_field+', ', shownum=sizeofdata, show=1)
+    return render_template("admin_search.html")
+
+
+@app.route("/delete", methods=["GET", "POST"])
+@login_required
+def admin_delete():
+    if request.method == 'POST':
+        jid = request.form.get('jid')
+        vtype = request.form.get('vtype')
+        query = '''
+        delete from vacancy
+        where jid=''' + jid + ' and type=\'' + vtype +'\''
+        g.conn.execute(text(query))
+        return render_template("delete.html", jid = jid, vtype = vtype) 
+    return render_template("delete.html")
 
 
 if __name__ == '__main__':
