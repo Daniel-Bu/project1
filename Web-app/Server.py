@@ -377,28 +377,31 @@ def admin_insert():
         unit = str(request.form['unit']).strip()
         agency = str(request.form['agency']).strip()
         query = 'select jid from job where jid=' + jid
-        cursor = g.conn.execute(text(query))
-        data = cursor.fetchall()
-        if not data:
-            return render_template("insert.html", jid=jid, show=2)
-        query = 'select name, aname from unit where name=\'' + unit +'\' and aname=\'' + agency +'\''
-        cursor = g.conn.execute(text(query))
-        data = cursor.fetchall()
-        if not data:
-            return render_template("insert.html", unit=unit, agency=agency, show=3)
-        if not post_until:
-            query = '''
-            insert into vacancy
-            values (%s, %s, %s, %s, %s, %s, null, now()::date, now()::date, %s, %s)
-            '''
-            g.conn.execute(query, (vtype, jid, num, sal_from, sal_to, sal_freq, unit, agency, ))
-        else:
-            query = '''
-            insert into vacancy
-            values (%s, %s, %s, %s, %s, %s, %s, now()::date, now()::date, %s, %s)
-            '''
-            g.conn.execute(query, (vtype, jid, num, sal_from, sal_to, sal_freq, post_until, unit, agency, ))
-        return render_template("insert.html", jid=jid, vtype=vtype, show=1)
+        try:
+            cursor = g.conn.execute(text(query))
+            data = cursor.fetchall()
+            if not data:
+                return render_template("insert.html", jid=jid, show=2)
+            query = 'select name, aname from unit where name=\'' + unit +'\' and aname=\'' + agency +'\''
+            cursor = g.conn.execute(text(query))
+            data = cursor.fetchall()
+            if not data:
+                return render_template("insert.html", unit=unit, agency=agency, show=3)
+            if not post_until:
+                query = '''
+                insert into vacancy
+                values (%s, %s, %s, %s, %s, %s, null, now()::date, now()::date, %s, %s)
+                '''
+                g.conn.execute(query, (vtype, jid, num, sal_from, sal_to, sal_freq, unit, agency, ))
+            else:
+                query = '''
+                insert into vacancy
+                values (%s, %s, %s, %s, %s, %s, %s, now()::date, now()::date, %s, %s)
+                '''
+                g.conn.execute(query, (vtype, jid, num, sal_from, sal_to, sal_freq, post_until, unit, agency, ))
+            return render_template("insert.html", jid=jid, vtype=vtype, show=1)
+        except:
+            return render_template("insert.html", jid=jid, show=4)
     return render_template("insert.html")
 
 
@@ -491,7 +494,7 @@ def admin_delete():
         delete from vacancy
         where jid=''' + jid + ' and type=\'' + vtype +'\''
         g.conn.execute(text(query))
-        return render_template("delete.html", jid = jid, vtype = vtype) 
+        return render_template("delete.html", jid = jid, vtype = vtype)
     return render_template("delete.html")
 
 

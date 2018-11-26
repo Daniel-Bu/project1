@@ -1,6 +1,6 @@
 {% extends "layout.html" %}
 {% block body %}
-    <h2><center>admin log in</center></h2>
+    <h2><center>Admin Login</center></h2>
     {% if error %}<p class=error><strong>Error:</strong> {{ error }}{% endif %}
     <form action="{{ url_for('admin_login') }}" method=post>
         <dl>

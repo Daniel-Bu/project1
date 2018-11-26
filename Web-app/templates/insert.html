@@ -7,17 +7,17 @@
             <option value="External">External</option>
             <option value="Internal">Internal</option>
         </select><br>
-        ID:&nbsp <input type=text name="jid"><br>
-        # Positions:&nbsp <input type=text name="num"><br>
-        Salary from:&nbsp <input type=text name="sal_from"><br>
-        Salary to:&nbsp <input type=text name="sal_to"><br>
+        ID:&nbsp <input type=text name="jid" onkeyup="this.value=this.value.replace(/\D/g,'')" onafterpaste="this.value=this.value.replace(/\D/g,'')" placeholder="only support numbers"><br>
+        # Positions:&nbsp <input type=text name="num" onkeyup="this.value=this.value.replace(/\D/g,'')" onafterpaste="this.value=this.value.replace(/\D/g,'')" placeholder="only support integers"><br>
+        Salary from:&nbsp <input type=text name="sal_from" onkeyup="if(isNaN(value))execCommand('undo')" onafterpaste="if(isNaN(value))execCommand('undo')" placeholder="only support float"><br>
+        Salary to:&nbsp <input type=text name="sal_to" onkeyup="if(isNaN(value))execCommand('undo')" onafterpaste="if(isNaN(value))execCommand('undo')" placeholder="only support float"><br>
         Salary Frequency:&nbsp <select name="sal_freq">
             <option value="Annual">Annual</option>
             <option value="Annual">Monthly</option>
             <option value="Annual">Weekly</option>
             <option value="Annual">Hourly</option>
         </select><br>
-        Post Until:&nbsp <input type=text name="post_until" placeholder="YYYY-MM-DD"><br>
+        Post Until:&nbsp <input type=date name="post_until" placeholder="YYYY-MM-DD"><br>
         Unit:&nbsp <input type=text name="unit"><br>
         Agency:&nbsp <input type=text name="agency"><br>
         <p><input type=submit value=Post></p>
@@ -39,7 +39,11 @@
     <p>This unit {{unit}} or agency {{agency}}  was not found in our database.</p>
 </div>
 {% endif %}
-
+{% if show == 4 %}
+<div class="flash">
+    <p>You have typed invalid information.</p>
+</div>
+{% endif %}
 <button onclick="goBack()">Back</button>
 <button onclick="window.location.href = '/admin';">Back home</button>
 <script>
