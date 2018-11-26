@@ -15,5 +15,5 @@ pip install flask psycopg2 sqlalchemy click flask-login
 - static: css theme
 
 ## Reference:
-- css file based on https://github.com/payoung/flask-sqlalchemy-login-manager-template
+- css file based on https://github.com/payoung/flask-sqlalchemy-login-manager-template/tree/master/static
 - We rewrite login function
