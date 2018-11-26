@@ -4,13 +4,13 @@ Designed by Chenyu Xi(cx2219) and Zhihan Bu(zb2244)
 Current URL: http://35.196.200.113:8111
 
 **No security features have been enabled**
-## Environment
+## Environment:
 - Python 2.7
 - Packages:  
 ```
 pip install flask psycopg2 sqlalchemy click flask-login
 ```
-## Files
+## Files:
 - Server.py: Run to start the Server (please add --threaded)
 - Database.py: Create Database engine
 - User.py: Define user class, used for Flask-login (No ORM)
