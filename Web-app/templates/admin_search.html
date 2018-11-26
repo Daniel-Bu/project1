@@ -61,7 +61,6 @@ In the order of
         <th>Salary to</th>
         <th>Frequency</th>
         <th>Posting time</th>
-        <th>Details</th>
         <th>Delete</th>
       </tr>
     {% for n in data %}
@@ -73,13 +72,6 @@ In the order of
     <td>&nbsp{{n[4]}}</td>
     <td>&nbsp{{n[5]}}</td>
     <td>&nbsp{{n[6]}}</td>
-    <td>
-    <form action="{{ url_for('detailed_info') }}" method=post>
-        <input type=hidden name=jid value={{n[0]}}>
-        <input type=hidden name=vtype value={{n[2]}}>
-        <input type=submit value="Detailed info">
-    </form>
-    </td>
     <td>
     <form action="{{ url_for('admin_delete') }}" method=post>
         <input type=hidden name=jid value={{n[0]}}>
