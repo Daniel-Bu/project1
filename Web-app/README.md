@@ -17,8 +17,8 @@ pip install flask psycopg2 sqlalchemy click flask-login
 ## Functions:
 - User / Admin login system
 - User:
-  - Search Jobs
-  - Apply Jobs
+  - Search vacancies with keywords
+  - Apply for vacancies
   - See website statistics
 - Admin:
   - Insert a job or vacancy
