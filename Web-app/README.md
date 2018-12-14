@@ -1,7 +1,7 @@
 # NYC Job Search Web-app
 Designed by Chenyu Xi(cx2219) and Zhihan Bu(zb2244)
 
-Current URL: http://35.196.200.113:8111
+Current URL: http://35.196.200.113:8111 (already dead)
 
 **No security features have been enabled**
 ## Environment:
